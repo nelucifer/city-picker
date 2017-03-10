@@ -94,7 +94,7 @@
     <h3>Custom placeholders</h3>
     <h5>HTML:</h5>
     <pre class="prettyprint">&lt;div style="position: relative;"&gt;&lt;!-- container --&gt;
-  &lt;input readonly type="text" data-toggle="city-picker" placeholder="点击从下拉面板中选择省/市/区"&gt;
+  &lt;input readonly type="text" data-toggle="city-picker" placeholder="点击从下拉面板中选择省/市/区/县"&gt;
 &lt;/div&gt;</pre>
 
     <h5>Demo:</h5>
@@ -137,14 +137,14 @@
     <h3>Custom Province / City / District</h3>
     <h5>HTML:</h5>
     <pre class="prettyprint">&lt;div style="position: relative;"&gt;&lt;!-- container --&gt;
-  &lt;input readonly type="text" data-toggle="city-picker" value="北京市/北京市/海淀区"&gt;
+  &lt;input readonly type="text" data-toggle="city-picker" value="广东/广州市/番禺区/石楼镇"&gt;
 &lt;/div&gt;</pre>
 
     <h5>Demo:</h5>
 
     <form class="form-inline">
         <div style="position: relative;">
-            <input class="form-control" readonly type="text" data-toggle="city-picker" value="北京市/北京市/海淀区">
+            <input class="form-control" readonly type="text" data-toggle="city-picker" value="广东/广州市/番禺区/石楼镇">
         </div>
     </form>
     <br>
@@ -181,9 +181,10 @@
 
     <h5>JavaScript:</h5>
     <pre class="prettyprint">$(&quot;#city-picker2&quot;).citypicker({
-  province: &quot;江苏省&quot;,
-  city: &quot;常州市&quot;,
-  district: &quot;溧阳市&quot;
+  province: &quot;广东&quot;,
+  city: &quot;广州市&quot;,
+  district: &quot;番禺区&quot;,
+  district: &quot;石楼镇&quot;
 });</pre>
 
     <h5>Demo:</h5>
@@ -205,7 +206,7 @@
             <div id="distpicker">
                 <div class="form-group">
                     <div style="position: relative;">
-                        <input id="city-picker3" class="form-control" readonly type="text" value="江苏省/常州市/溧阳市"
+                        <input id="city-picker3" class="form-control" readonly type="text" value="广东/广州市/番禺区/石楼镇"
                                data-toggle="city-picker">
                     </div>
                 </div>

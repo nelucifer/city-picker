@@ -9,10 +9,11 @@ $(function () {
 
     var $citypicker2 = $('#city-picker2');
 
-    $citypicker2.citypicker({
-        province: '江苏省',
-        city: '常州市',
-        district: '溧阳市'
+    $citypicker2.citypicker({//广东/广州市/番禺区/石楼镇
+        province: '广东',
+        city: '广州市',
+        district: '番禺区',
+        county: '石楼镇'
     });
 
     var $citypicker3 = $('#city-picker3');
@@ -25,7 +26,7 @@ $(function () {
         $citypicker3.citypicker('destroy');
     });
 
-    $('#get-code').click(function () {
+    $('#get-code').click(function () {//获取省市区县id
         var count = $('#code-count').data('count');
         var code = $citypicker3.data('citypicker').getCode(count);
         $(this).find('.code').text(': ' + code);
