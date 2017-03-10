@@ -20,18 +20,16 @@
         factory(jQuery, ChineseDistricts);
     }
 })(function ($, ChineseDistricts) {
-
     'use strict';
-
     if (typeof ChineseDistricts === 'undefined') {
         throw new Error('The file "city-picker.data.js" must be included first!');
     }
-
     var NAMESPACE = 'citypicker';
     var EVENT_CHANGE = 'change.' + NAMESPACE;
     var PROVINCE = 'province';
     var CITY = 'city';
     var DISTRICT = 'district';
+    var COUNTY = 'county';
 
     function CityPicker(element, options) {
         this.$element = $(element);
@@ -56,7 +54,7 @@
 
             this.active = true;
         },
-
+        //界面显示处理
         render: function () {
             var p = this.getPosition(),
                 placeholder = this.$element.attr('placeholder') || this.options.placeholder,
@@ -72,11 +70,14 @@
                     '<div class="city-select-tab">' +
                     '<a class="active" data-count="province">省份</a>' +
                     (this.includeDem('city') ? '<a data-count="city">城市</a>' : '') +
-                    (this.includeDem('district') ? '<a data-count="district">区县</a>' : '') + '</div>' +
+                    (this.includeDem('district') ? '<a data-count="district">区名</a>' : '') +
+                    (this.includeDem('county') ? '<a data-count="county">县名</a>' : '') +
+                    '</div>' +
                     '<div class="city-select-content">' +
                     '<div class="city-select province" data-count="province"></div>' +
                     (this.includeDem('city') ? '<div class="city-select city" data-count="city"></div>' : '') +
                     (this.includeDem('district') ? '<div class="city-select district" data-count="district"></div>' : '') +
+                    (this.includeDem('county') ? '<div class="city-select county" data-count="county"></div>' : '') +
                     '</div></div>';
 
             this.$element.addClass('city-picker-input');
@@ -99,22 +100,22 @@
             // parse value from value of the target $element
             var val = this.$element.val() || '';
             val = val.split('/');
-            $.each(this.dems, $.proxy(function (i, type) {
+            $.each(this.dems, $.proxy(function (i, type) {//遍历dems
                 if (val[i] && i < val.length) {
-                    this.options[type] = val[i];
+                    this.options[type] = val[i];//把当前显示值赋值给options
                 } else if (force) {
                     this.options[type] = '';
                 }
-                this.output(type);
+                this.output(type);//输出下拉框显示数据
             }, this));
             this.tab(PROVINCE);
-            this.feedText();
-            this.feedVal();
+            this.feedText();//界面显示选择的内容
+            this.feedVal();//input标签value赋值
         },
-
+        //dems赋值
         defineDems: function () {
             var stop = false;
-            $.each([PROVINCE, CITY, DISTRICT], $.proxy(function (i, type) {
+            $.each([PROVINCE, CITY, DISTRICT,COUNTY], $.proxy(function (i, type) {
                 if (!stop) {
                     this.dems.push(type);
                 }
@@ -188,10 +189,9 @@
                 return 'width:' + (dropdown ? Math.max(320, w) : w) + 'px;';
             }
         },
-
+        //绑定事件
         bind: function () {
             var $this = this;
-
             $(document).on('click', (this._mouteclick = function (e) {
                 var $target = $(e.target);
                 var $dropdown, $span, $input;
@@ -214,9 +214,7 @@
                     ($dropdown && $dropdown.get(0) !== $this.$dropdown.get(0))) {
                     $this.close(true);
                 }
-
             }));
-
             this.$element.on('change', (this._changeElement = $.proxy(function () {
                 this.close(true);
                 this.refresh(true);
@@ -229,7 +227,6 @@
                     this.close(true);
                 }
             }, this)));
-
             this.$textspan.on('click', function (e) {
                 var $target = $(e.target), type;
                 $this.needBlur = false;
@@ -246,7 +243,6 @@
             }).on('mousedown', function () {
                 $this.needBlur = false;
             });
-
             this.$dropdown.on('click', '.city-select a', function () {
                 var $select = $(this).parents('.city-select');
                 var $active = $select.find('a.active');
@@ -272,30 +268,43 @@
             }).on('mousedown', function () {
                 $this.needBlur = false;
             });
-
             if (this.$province) {
                 this.$province.on(EVENT_CHANGE, (this._changeProvince = $.proxy(function () {
-                    this.output(CITY);
-                    this.output(DISTRICT);
+                    if(this.output(CITY)){//判断下一个tab是否有数据,没有则关闭下拉
+                        $this.close();
+                        return;
+                    };
                     this.tab(CITY);
                 }, this)));
             }
-
             if (this.$city) {
                 this.$city.on(EVENT_CHANGE, (this._changeCity = $.proxy(function () {
-                    this.output(DISTRICT);
+                    if(this.output(DISTRICT)){
+                        $this.close();
+                        return;
+                    };
                     this.tab(DISTRICT);
                 }, this)));
             }
-        },
 
+            if (this.$district) {
+                this.$district.on(EVENT_CHANGE, (this._changeDistrict = $.proxy(function () {
+                    if(this.output(COUNTY)){
+                        $this.close();
+                        return;
+                    };
+                    this.tab(COUNTY);
+                }, this)));
+            }
+        },
+        //显示下拉
         open: function (type) {
             type = type || PROVINCE;
             this.$dropdown.show();
             this.$textspan.addClass('open').addClass('focus');
             this.tab(type);
         },
-
+        //关闭下拉
         close: function (blur) {
             this.$dropdown.hide();
             this.$textspan.removeClass('open');
@@ -303,7 +312,7 @@
                 this.$textspan.removeClass('focus');
             }
         },
-
+        //解绑事件
         unbind: function () {
 
             $(document).off('click', this._mouteclick);
@@ -325,8 +334,12 @@
             if (this.$city) {
                 this.$city.off(EVENT_CHANGE, this._changeCity);
             }
-        },
 
+            if (this.$district) {
+                this.$district.off(EVENT_CHANGE, this._changeDistrict);
+            }
+        },
+        //获取选择项信息
         getText: function () {
             var text = '';
             this.$dropdown.find('.city-select')
@@ -340,11 +353,10 @@
                 });
             return text;
         },
-
         getPlaceHolder: function () {
             return this.$element.attr('placeholder') || this.options.placeholder;
         },
-
+        //显示placeholder或者选择的区域
         feedText: function () {
             var text = this.getText();
             if (text) {
@@ -355,7 +367,6 @@
                 this.$textspan.find('>.title').html('').hide();
             }
         },
-
         getCode: function (count) {
             var obj = {}, arr = [];
             this.$textspan.find('.select-item')
@@ -367,27 +378,30 @@
                 });
             return count ? obj[count] : arr.join('/');
         },
-
         getVal: function () {
             var text = '';
+            var code='';
             this.$dropdown.find('.city-select')
                 .each(function () {
                     var item = $(this).data('item');
                     if (item) {
                         text += ($(this).hasClass('province') ? '' : '/') + item.address;
+                        code += ($(this).hasClass('province') ? '' : '_') + item.code;
                     }
                 });
+            $("#addrValue").val(code);
             return text;
         },
-
+        //input的value赋值
         feedVal: function (trigger) {
             this.$element.val(this.getVal());
             if(trigger) {
                 this.$element.trigger('cp:updated');
             }
         },
-
+        //输出数据
         output: function (type) {
+            var $this = this;
             var options = this.options;
             //var placeholders = this.placeholders;
             var $select = this['$' + type];
@@ -397,21 +411,17 @@
             var code;
             var matched = null;
             var value;
-
             if (!$select || !$select.length) {
                 return;
             }
-
             item = $select.data('item');
-
             value = (item ? item.address : null) || options[type];
-
             code = (
                 type === PROVINCE ? 86 :
                     type === CITY ? this.$province && this.$province.find('.active').data('code') :
-                        type === DISTRICT ? this.$city && this.$city.find('.active').data('code') : code
+                        type === DISTRICT ? this.$city && this.$city.find('.active').data('code') :
+                            type === COUNTY ? this.$district && this.$district.find('.active').data('code') : code
             );
-
             districts = $.isNumeric(code) ? ChineseDistricts[code] : null;
 
             if ($.isPlainObject(districts)) {
@@ -451,9 +461,14 @@
 
             $select.html(type === PROVINCE ? this.getProvinceList(data) :
                 this.getList(data, type));
-            $select.data('item', matched);
+            $select.data('item', matched);//当前tab添加item(包含选择对象的内容)
+            if(! (type === PROVINCE)){//标识:下一个选项没有数据则关闭
+                if(data.length==0){
+                    return true;
+                }
+            }
         },
-
+        //遍历省份
         getProvinceList: function (data) {
             var list = [],
                 $this = this,
@@ -478,7 +493,7 @@
 
             return list.join('');
         },
-
+        //遍历市或区或县
         getList: function (data, type) {
             var list = [],
                 $this = this,
@@ -500,7 +515,7 @@
 
             return list.join('');
         },
-
+        //简化名字
         simplize: function (address, type) {
             address = address || '';
             if (type === PROVINCE) {
@@ -512,7 +527,7 @@
                 return address.length > 2 ? address.replace(/[市,区,县,旗]/g, '') : address;
             }
         },
-
+        //处理tab显示
         tab: function (type) {
             var $selects = this.$dropdown.find('.city-select');
             var $tabs = this.$dropdown.find('.city-select-tab > a');
@@ -542,10 +557,11 @@
         simple: false,
         responsive: false,
         placeholder: '请选择省/市/区',
-        level: 'district',
+        level: 'county',
         province: '',
         city: '',
-        district: ''
+        district: '',
+        county:''
     };
 
     CityPicker.setDefaults = function (options) {
