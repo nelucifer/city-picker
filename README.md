@@ -3,7 +3,7 @@
 > A simple jQuery plugin for picking provinces, cities and districts of China.
 
 - [Demo](https://huangchanghuan.github.io/city-picker)
-
+- [博客园更简单使用说明](http://www.cnblogs.com/huangchanghuan/p/6681510.html)
 ##Release History
 
 ###v1.1.0
