@@ -1,9 +1,12 @@
 # City Picker
 
 # 个性化更新日志
+by coder立夏
 * 2020年1月5日：
   * 添加获取对象类型的数据，如{province:120000, provinceName: '天津市'};
   * 添加根据类别获取name字段的方法；
+
+---
 
 > A simple jQuery plugin for picking provinces, cities and districts of China.
 
