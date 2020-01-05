@@ -5,7 +5,29 @@ by coder立夏
 * 2020年1月5日：
   * 添加获取对象类型的数据，如{province:120000, provinceName: '天津市'};
   * 添加根据类别获取name字段的方法；
+使用方法：
+```javascript
+// 第一个方法：type: null or undefined(get the full code path, separated with /), province, city, district
+$('#city-picker3').data('citypicker').getValByCount();
+// 返回值为："广东/广州市/番禺区/石楼镇"
+$('#city-picker3').data('citypicker').getValByCount('province');
+// 返回值为："广东"
 
+// 第二个方法, 入参为name的后缀
+$('#city-picker3').data('citypicker').getValueObj("Name")
+/* 返回值格式
+{
+ city: 1601
+ cityName: "广州市"
+ county: 50400
+ countyName: "石楼镇"
+ district: 36953
+ districtName: "番禺区"
+ province: 19
+ provinceName: "广东"
+}
+*/
+```
 ---
 
 > A simple jQuery plugin for picking provinces, cities and districts of China.
