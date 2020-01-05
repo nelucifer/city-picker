@@ -115,7 +115,7 @@
         //dems赋值
         defineDems: function () {
             var stop = false;
-            $.each([PROVINCE, CITY, DISTRICT,COUNTY], $.proxy(function (i, type) {
+            $.each([PROVINCE, CITY, DISTRICT, COUNTY], $.proxy(function (i, type) {
                 if (!stop) {
                     this.dems.push(type);
                 }
@@ -270,29 +270,32 @@
             });
             if (this.$province) {
                 this.$province.on(EVENT_CHANGE, (this._changeProvince = $.proxy(function () {
-                    if(this.output(CITY)){//判断下一个tab是否有数据,没有则关闭下拉
+                    if (this.output(CITY)) {//判断下一个tab是否有数据,没有则关闭下拉
                         $this.close();
                         return;
-                    };
+                    }
+                    ;
                     this.tab(CITY);
                 }, this)));
             }
             if (this.$city) {
                 this.$city.on(EVENT_CHANGE, (this._changeCity = $.proxy(function () {
-                    if(this.output(DISTRICT)){
+                    if (this.output(DISTRICT)) {
                         $this.close();
                         return;
-                    };
+                    }
+                    ;
                     this.tab(DISTRICT);
                 }, this)));
             }
 
             if (this.$district) {
                 this.$district.on(EVENT_CHANGE, (this._changeDistrict = $.proxy(function () {
-                    if(this.output(COUNTY)){
+                    if (this.output(COUNTY)) {
                         $this.close();
                         return;
-                    };
+                    }
+                    ;
                     this.tab(COUNTY);
                 }, this)));
             }
@@ -380,7 +383,7 @@
         },
         getVal: function () {
             var text = '';
-            var code='';
+            var code = '';
             this.$dropdown.find('.city-select')
                 .each(function () {
                     var item = $(this).data('item');
@@ -392,10 +395,44 @@
             $("#addrValue").val(code);
             return text;
         },
+        /**
+         * 根据类别获取值
+         * @param count
+         * @returns {string}
+         */
+        getValByCount: function (count) {
+            var obj = {}, arr = [];
+            this.$textspan.find('.select-item')
+                .each(function () {
+                    var count = $(this).data('count');
+                    var text = $(this).text();
+                    obj[count] = text;
+                    arr.push(text);
+                });
+            return count ? obj[count] : arr.join('/');
+        },
+        /**
+         * 获取当前选中code和value，对象格式
+         * 支持自己给value的key添加后缀
+         * @param nameSuffix
+         */
+        getValueObj: function (nameSuffix) {
+            var obj = {};
+            nameSuffix = nameSuffix || "Name";
+            this.$textspan.find('.select-item')
+                .each(function () {
+                    var code = $(this).data('code');
+                    var count = $(this).data('count');
+                    var text = $(this).text();
+                    obj[count] = code;
+                    obj[(count + nameSuffix)] = text;
+                });
+            return obj;
+        },
         //input的value赋值
         feedVal: function (trigger) {
             this.$element.val(this.getVal());
-            if(trigger) {
+            if (trigger) {
                 this.$element.trigger('cp:updated');
             }
         },
@@ -462,8 +499,8 @@
             $select.html(type === PROVINCE ? this.getProvinceList(data) :
                 this.getList(data, type));
             $select.data('item', matched);//当前tab添加item(包含选择对象的内容)
-            if(! (type === PROVINCE)){//标识:下一个选项没有数据则关闭
-                if(data.length==0){
+            if (!(type === PROVINCE)) {//标识:下一个选项没有数据则关闭
+                if (data.length == 0) {
                     return true;
                 }
             }
@@ -485,7 +522,7 @@
                         ' class="' +
                         (m.selected ? ' active' : '') +
                         '">' +
-                        ( simple ? $this.simplize(m.address, PROVINCE) : m.address) +
+                        (simple ? $this.simplize(m.address, PROVINCE) : m.address) +
                         '</a>');
                 });
                 list.push('</dd></dl>');
@@ -508,7 +545,7 @@
                     ' class="' +
                     (n.selected ? ' active' : '') +
                     '">' +
-                    ( simple ? $this.simplize(n.address, type) : n.address) +
+                    (simple ? $this.simplize(n.address, type) : n.address) +
                     '</a>');
             });
             list.push('</dd></dl>');
@@ -561,7 +598,7 @@
         province: '',
         city: '',
         district: '',
-        county:''
+        county: ''
     };
 
     CityPicker.setDefaults = function (options) {
